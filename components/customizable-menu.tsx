@@ -1,24 +1,27 @@
 "use client";
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import { ArrowDownIcon } from "./icons/arrow-down";
+import { ArrowUpIcon } from "./icons/arrow-up";
+import { CogIcon } from "./icons/cog";
 
 // Menu items.
 const items = [
@@ -63,45 +66,69 @@ const items = [
 
 export function CustomizableMenu() {
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+  const [expandedId, setExpandedId] = React.useState<number | null>(null);
+
   return (
     <Sidebar
       collapsible={isMobile ? "offcanvas" : "none"}
       side={isMobile ? "right" : "left"}
     >
+      <SidebarHeader className="h-[98px] px-10">
+        <div>Menu</div>
+        <CogIcon />
+      </SidebarHeader>
+      <Separator />
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <Collapsible className="group/collapsible">
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton asChild>
-                        <a href={item.target}>
-                          <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
+        <SidebarMenu>
+          {items.map((item) => {
+            // const isOpen =
+            //   pathname === item.target ||
+            //   item.children?.some((child) => child.target === pathname);
+            return (
+              <Collapsible
+                key={item.id}
+                className="group/collapsible"
+                open={expandedId === item.id}
+                onOpenChange={(open) => setExpandedId(open ? item.id : null)}
+              >
+                <SidebarMenuItem key={item.title}>
+                  <div className="w-[412px] h-[65px] bg-[#F7F7F7] px-6 rounded-sm flex justify-between items-center">
+                    <Link href={item.target || "#"}>
+                      <span>{item.title}</span>
+                    </Link>
                     {item.children && (
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.children.map((child) => (
-                            <SidebarMenuSubItem key={child.title}>
-                              <a href={child.target}>
-                                <span>{child.title}</span>
-                              </a>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
+                      <CollapsibleTrigger
+                        onClick={() => setExpandedId(item.id)}
+                      >
+                        {expandedId === item.id ? (
+                          <ArrowUpIcon />
+                        ) : (
+                          <ArrowDownIcon />
+                        )}
+                      </CollapsibleTrigger>
                     )}
-                  </SidebarMenuItem>
-                ))}
+                  </div>
+                  <CollapsibleContent>
+                    {item.children && (
+                      <SidebarMenuSub>
+                        {item.children.map((child) => (
+                          <SidebarMenuSubItem key={child.id}>
+                            <div className="h-[52px] flex justify-between items-center">
+                              <Link href={child.target || "#"}>
+                                <span>{child.title}</span>
+                              </Link>
+                            </div>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    )}
+                  </CollapsibleContent>
+                </SidebarMenuItem>
               </Collapsible>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+            );
+          })}
+        </SidebarMenu>
       </SidebarContent>
     </Sidebar>
   );

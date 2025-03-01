@@ -1,17 +1,12 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { CustomizableMenu } from "@/components/customizable-menu";
 import AppNavbar from "@/components/app-navbar";
+import { CustomizableMenu } from "@/components/customizable-menu";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import type { Metadata } from "next";
+import { DM_Sans } from "next/font/google";
+import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
 });
 
@@ -28,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen w-screen bg-[#F5F5F5]`}
+        className={`${dmSans.variable} antialiased min-h-screen w-screen bg-[#F5F5F5]`}
       >
         <SidebarProvider>
           <div className="flex flex-col h-full w-full">
