@@ -18,6 +18,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import React from "react";
+import { ItemsDnd } from "./dnd";
 import { ArrowDownIcon } from "./icons/arrow-down";
 import { ArrowUpIcon } from "./icons/arrow-up";
 import { CancelIcon } from "./icons/cancel";
@@ -27,7 +28,6 @@ import { DragIcon } from "./icons/drag";
 import { EditIcon } from "./icons/edit";
 import { HideIcon } from "./icons/hide";
 import { ViewIcon } from "./icons/view";
-import { SortableItem } from "./dnd";
 
 export interface Item {
   id: number;
@@ -79,9 +79,9 @@ export const initialItems: Item[] = [
 
 export function CustomizableMenu() {
   const isMobile = useIsMobile();
+  const [items, setItems] = React.useState(initialItems);
   const [expandedId, setExpandedId] = React.useState<number | null>(null);
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const [items, setItems] = React.useState(initialItems);
 
   return (
     <Sidebar
@@ -92,17 +92,21 @@ export function CustomizableMenu() {
       <SidebarSeparator />
       <SidebarContent>
         <SidebarMenu>
-          {items.map((item) => {
-            return (
+          <ItemsDnd
+            disableDnd={!isEditMode}
+            items={items}
+            setItems={setItems}
+            renderItem={(item) => (
               <MenuItem
                 key={item.id}
                 item={item}
                 isEditMode={isEditMode}
                 isExpanded={expandedId === item.id}
                 setExpandedId={setExpandedId}
+                setItems={setItems}
               />
-            );
-          })}
+            )}
+          />
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
@@ -114,16 +118,30 @@ function MenuItem({
   isEditMode,
   isExpanded,
   setExpandedId,
+  setItems,
 }: {
   item: Item;
   isEditMode: boolean;
   isExpanded: boolean;
   setExpandedId: (id: number | null) => void;
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 }) {
   // const pathname = usePathname();
   // const isOpen =
   //   pathname === item.target ||
   //   item.children?.some((child) => child.target === pathname);
+
+  function setSubItems(subItems: Item[]) {
+    setItems((items) => {
+      return items.map((i) => {
+        if (i.id === item.id) {
+          return { ...i, children: subItems };
+        }
+        return i;
+      });
+    });
+  }
+
   return (
     <SidebarMenuItem key={item.id}>
       <Collapsible
@@ -151,15 +169,18 @@ function MenuItem({
         <CollapsibleContent>
           {item.children && (
             <SidebarMenuSub>
-              {item.children.map((item) => {
-                return (
+              <ItemsDnd
+                disableDnd={!isEditMode}
+                items={item.children}
+                setItems={setSubItems}
+                renderItem={(item) => (
                   <MenuSubItem
                     key={item.id}
                     item={item}
                     isEditMode={isEditMode}
                   />
-                );
-              })}
+                )}
+              />
             </SidebarMenuSub>
           )}
         </CollapsibleContent>

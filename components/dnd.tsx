@@ -1,19 +1,19 @@
 "use client";
 
 import {
-    closestCenter,
-    DndContext,
-    DragEndEvent,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import React from "react";
 
@@ -21,9 +21,15 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Item } from "./customizable-menu";
 
-export function SortableItem({ item }: { item: Item }) {
+export function SortableItem({
+  id,
+  children,
+}: {
+  id: number;
+  children: React.ReactNode;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id });
+    useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -32,17 +38,21 @@ export function SortableItem({ item }: { item: Item }) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {item.title}
+      {children}
     </div>
   );
 }
 
-export function Dnd({
+export function ItemsDnd({
   items,
   setItems,
+  renderItem,
+  disableDnd = false,
 }: {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  renderItem: (item: Item) => React.ReactNode;
+  disableDnd?: boolean;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -64,16 +74,22 @@ export function Dnd({
     }
   }
 
-  return (
+  return disableDnd ? (
+    items.map((item) => renderItem(item))
+  ) : (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((item) => (
-          <SortableItem key={item.id} item={item} />
-        ))}
+        {items.map((item) => {
+          return (
+            <SortableItem key={item.id} id={item.id}>
+              {renderItem(item)}
+            </SortableItem>
+          );
+        })}
       </SortableContext>
     </DndContext>
   );
