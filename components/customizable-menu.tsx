@@ -5,7 +5,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -14,23 +13,31 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
 import { ArrowDownIcon } from "./icons/arrow-down";
 import { ArrowUpIcon } from "./icons/arrow-up";
-import { CogIcon } from "./icons/cog";
-import { EditIcon } from "./icons/edit";
-import { ViewIcon } from "./icons/view";
-import { HideIcon } from "./icons/hide";
-import { DragIcon } from "./icons/drag";
-import { DoneIcon } from "./icons/done";
 import { CancelIcon } from "./icons/cancel";
+import { CogIcon } from "./icons/cog";
+import { DoneIcon } from "./icons/done";
+import { DragIcon } from "./icons/drag";
+import { EditIcon } from "./icons/edit";
+import { HideIcon } from "./icons/hide";
+import { ViewIcon } from "./icons/view";
+import { SortableItem } from "./dnd";
 
-// Menu items.
-const items = [
+export interface Item {
+  id: number;
+  title: string;
+  target?: string;
+  visible?: boolean;
+  children?: Item[];
+}
+
+export const initialItems: Item[] = [
   { id: 1, title: "Dashboard", target: "/" },
   {
     id: 2,
@@ -72,127 +79,156 @@ const items = [
 
 export function CustomizableMenu() {
   const isMobile = useIsMobile();
-  const pathname = usePathname();
   const [expandedId, setExpandedId] = React.useState<number | null>(null);
   const [isEditMode, setIsEditMode] = React.useState(false);
+  const [items, setItems] = React.useState(initialItems);
 
   return (
     <Sidebar
       collapsible={isMobile ? "offcanvas" : "none"}
       side={isMobile ? "right" : "left"}
     >
-      <SidebarHeader className="h-[98px] px-10">
-        <div>Menu</div>
-        {isEditMode ? (
-          <div className="flex gap-3 items-center">
-            <IconButton
-              icon={<CancelIcon />}
-              onClick={() => setIsEditMode(false)}
-            />
-            <IconButton
-              icon={<DoneIcon />}
-              onClick={() => setIsEditMode(false)}
-            />
-          </div>
-        ) : (
-          <IconButton icon={<CogIcon />} onClick={() => setIsEditMode(true)} />
-        )}
-      </SidebarHeader>
-      <Separator />
+      <Header isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
+      <SidebarSeparator />
       <SidebarContent>
         <SidebarMenu>
           {items.map((item) => {
-            // const isOpen =
-            //   pathname === item.target ||
-            //   item.children?.some((child) => child.target === pathname);
             return (
-              <Collapsible
+              <MenuItem
                 key={item.id}
-                className="group/collapsible"
-                open={expandedId === item.id}
-                onOpenChange={(open) => setExpandedId(open ? item.id : null)}
-              >
-                <SidebarMenuItem key={item.title}>
-                  <div className="w-[412px] h-[65px] bg-[#F7F7F7] px-6 rounded-sm flex justify-between items-center">
-                    {isEditMode ? (
-                      <>
-                        <div className="flex gap-3 items-center">
-                          <IconButton icon={<DragIcon />} onClick={() => {}} />
-                          <span>{item.title}</span>
-                        </div>
-                        <div className="flex gap-3 items-center">
-                          <IconButton icon={<EditIcon />} onClick={() => {}} />
-                          <IconButton icon={<ViewIcon />} onClick={() => {}} />
-                          <IconButton icon={<HideIcon />} onClick={() => {}} />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <Link href={item.target || "#"}>{item.title}</Link>
-                        {item.children && (
-                          <CollapsibleTrigger>
-                            <IconButton
-                              icon={
-                                expandedId === item.id ? (
-                                  <ArrowUpIcon />
-                                ) : (
-                                  <ArrowDownIcon />
-                                )
-                              }
-                            />
-                          </CollapsibleTrigger>
-                        )}
-                      </>
-                    )}
-                  </div>
-                  <CollapsibleContent>
-                    {item.children && (
-                      <SidebarMenuSub>
-                        {item.children.map((item) => (
-                          <SidebarMenuSubItem key={item.id}>
-                            <div className="h-[52px] flex justify-between items-center pr-6">
-                              {isEditMode ? (
-                                <>
-                                  <div className="flex gap-3 items-center">
-                                    <IconButton
-                                      icon={<DragIcon />}
-                                      onClick={() => {}}
-                                    />
-                                    <span>{item.title}</span>
-                                  </div>
-                                  <div className="flex gap-3 items-center">
-                                    <IconButton
-                                      icon={<EditIcon />}
-                                      onClick={() => {}}
-                                    />
-                                    <IconButton
-                                      icon={<ViewIcon />}
-                                      onClick={() => {}}
-                                    />
-                                    <IconButton
-                                      icon={<HideIcon />}
-                                      onClick={() => {}}
-                                    />
-                                  </div>
-                                </>
-                              ) : (
-                                <Link href={item.target || "#"}>
-                                  {item.title}
-                                </Link>
-                              )}
-                            </div>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    )}
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+                item={item}
+                isEditMode={isEditMode}
+                isExpanded={expandedId === item.id}
+                setExpandedId={setExpandedId}
+              />
             );
           })}
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+function MenuItem({
+  item,
+  isEditMode,
+  isExpanded,
+  setExpandedId,
+}: {
+  item: Item;
+  isEditMode: boolean;
+  isExpanded: boolean;
+  setExpandedId: (id: number | null) => void;
+}) {
+  // const pathname = usePathname();
+  // const isOpen =
+  //   pathname === item.target ||
+  //   item.children?.some((child) => child.target === pathname);
+  return (
+    <SidebarMenuItem key={item.id}>
+      <Collapsible
+        key={item.id}
+        className="group/collapsible"
+        open={isExpanded}
+        onOpenChange={(open) => setExpandedId(open ? item.id : null)}
+      >
+        <div className="w-[412px] h-[65px] bg-[#F7F7F7] px-6 rounded-sm flex justify-between items-center">
+          {isEditMode ? (
+            <EditableItem item={item} />
+          ) : (
+            <>
+              <Link href={item.target || "#"}>{item.title}</Link>
+              {item.children && (
+                <CollapsibleTrigger>
+                  <IconButton
+                    icon={isExpanded ? <ArrowUpIcon /> : <ArrowDownIcon />}
+                  />
+                </CollapsibleTrigger>
+              )}
+            </>
+          )}
+        </div>
+        <CollapsibleContent>
+          {item.children && (
+            <SidebarMenuSub>
+              {item.children.map((item) => {
+                return (
+                  <MenuSubItem
+                    key={item.id}
+                    item={item}
+                    isEditMode={isEditMode}
+                  />
+                );
+              })}
+            </SidebarMenuSub>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+    </SidebarMenuItem>
+  );
+}
+
+function MenuSubItem({
+  item,
+  isEditMode,
+}: {
+  item: Item;
+  isEditMode: boolean;
+}) {
+  return (
+    <SidebarMenuSubItem key={item.id}>
+      <div className="h-[52px] flex justify-between items-center pr-6">
+        {isEditMode ? (
+          <EditableItem item={item} />
+        ) : (
+          <Link href={item.target || "#"}>{item.title}</Link>
+        )}
+      </div>
+    </SidebarMenuSubItem>
+  );
+}
+
+function Header({
+  isEditMode,
+  setIsEditMode,
+}: {
+  isEditMode: boolean;
+  setIsEditMode: (value: boolean) => void;
+}) {
+  return (
+    <SidebarHeader className="h-[98px] px-10">
+      <div>Menu</div>
+      {isEditMode ? (
+        <div className="flex gap-3 items-center">
+          <IconButton
+            icon={<CancelIcon />}
+            onClick={() => setIsEditMode(false)}
+          />
+          <IconButton
+            icon={<DoneIcon />}
+            onClick={() => setIsEditMode(false)}
+          />
+        </div>
+      ) : (
+        <IconButton icon={<CogIcon />} onClick={() => setIsEditMode(true)} />
+      )}
+    </SidebarHeader>
+  );
+}
+
+function EditableItem({ item }: { item: Item }) {
+  return (
+    <>
+      <div className="flex gap-3 items-center">
+        <IconButton icon={<DragIcon />} onClick={() => {}} />
+        <span>{item.title}</span>
+      </div>
+      <div className="flex gap-3 items-center">
+        <IconButton icon={<EditIcon />} onClick={() => {}} />
+        <IconButton icon={<ViewIcon />} onClick={() => {}} />
+        <IconButton icon={<HideIcon />} onClick={() => {}} />
+      </div>
+    </>
   );
 }
 

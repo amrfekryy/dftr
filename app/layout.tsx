@@ -28,9 +28,9 @@ export default function RootLayout({
         <SidebarProvider>
           <div className="flex flex-col h-full w-full">
             <AppNavbar />
-            <div className="flex h-full">
+            <div className="flex h-full w-full">
               <CustomizableMenu />
-              <main>{children}</main>
+              <main className="h-full flex-1">{children}</main>
             </div>
           </div>
         </SidebarProvider>
