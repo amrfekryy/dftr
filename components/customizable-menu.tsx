@@ -96,7 +96,7 @@ export function CustomizableMenu() {
             disableDnd={!isEditMode}
             items={items}
             setItems={setItems}
-            renderItem={(item) => (
+            renderItem={({ item, dndProps }) => (
               <MenuItem
                 key={item.id}
                 item={item}
@@ -104,6 +104,7 @@ export function CustomizableMenu() {
                 isExpanded={expandedId === item.id}
                 setExpandedId={setExpandedId}
                 setItems={setItems}
+                dndProps={dndProps}
               />
             )}
           />
@@ -119,12 +120,14 @@ function MenuItem({
   isExpanded,
   setExpandedId,
   setItems,
+  dndProps,
 }: {
   item: Item;
   isEditMode: boolean;
   isExpanded: boolean;
   setExpandedId: (id: number | null) => void;
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  dndProps: any;
 }) {
   // const pathname = usePathname();
   // const isOpen =
@@ -152,7 +155,7 @@ function MenuItem({
       >
         <div className="w-[412px] h-[65px] bg-[#F7F7F7] px-6 rounded-sm flex justify-between items-center">
           {isEditMode ? (
-            <EditableItem item={item} />
+            <EditableItem item={item} dndProps={dndProps} />
           ) : (
             <>
               <Link href={item.target || "#"}>{item.title}</Link>
@@ -172,12 +175,14 @@ function MenuItem({
               <ItemsDnd
                 disableDnd={!isEditMode}
                 items={item.children}
+                // @ts-ignore
                 setItems={setSubItems}
-                renderItem={(item) => (
+                renderItem={({ item, dndProps }) => (
                   <MenuSubItem
                     key={item.id}
                     item={item}
                     isEditMode={isEditMode}
+                    dndProps={dndProps}
                   />
                 )}
               />
@@ -192,15 +197,17 @@ function MenuItem({
 function MenuSubItem({
   item,
   isEditMode,
+  dndProps,
 }: {
   item: Item;
   isEditMode: boolean;
+  dndProps: any;
 }) {
   return (
     <SidebarMenuSubItem key={item.id}>
       <div className="h-[52px] flex justify-between items-center pr-6">
         {isEditMode ? (
-          <EditableItem item={item} />
+          <EditableItem item={item} dndProps={dndProps} />
         ) : (
           <Link href={item.target || "#"}>{item.title}</Link>
         )}
@@ -237,11 +244,11 @@ function Header({
   );
 }
 
-function EditableItem({ item }: { item: Item }) {
+function EditableItem({ item, dndProps }: { item: Item; dndProps: any }) {
   return (
     <>
       <div className="flex gap-3 items-center">
-        <IconButton icon={<DragIcon />} onClick={() => {}} />
+        <IconButton icon={<DragIcon {...dndProps} />} onClick={() => {}} />
         <span>{item.title}</span>
       </div>
       <div className="flex gap-3 items-center">

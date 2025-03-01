@@ -21,15 +21,23 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Item } from "./customizable-menu";
 
-export function SortableItem({
-  id,
-  children,
+type RenderItem = ({
+  item,
+  dndProps,
 }: {
-  id: number;
-  children: React.ReactNode;
+  item: Item;
+  dndProps?: any;
+}) => React.ReactNode;
+
+export function SortableItem({
+  item,
+  renderItem,
+}: {
+  item: Item;
+  renderItem: RenderItem;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+    useSortable({ id: item.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -37,8 +45,8 @@ export function SortableItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
+    <div ref={setNodeRef} style={style}>
+      {renderItem({ item, dndProps: { ...attributes, ...listeners } })}
     </div>
   );
 }
@@ -51,7 +59,7 @@ export function ItemsDnd({
 }: {
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-  renderItem: (item: Item) => React.ReactNode;
+  renderItem: RenderItem;
   disableDnd?: boolean;
 }) {
   const sensors = useSensors(
@@ -75,7 +83,7 @@ export function ItemsDnd({
   }
 
   return disableDnd ? (
-    items.map((item) => renderItem(item))
+    items.map((item) => renderItem({ item }))
   ) : (
     <DndContext
       sensors={sensors}
@@ -85,9 +93,7 @@ export function ItemsDnd({
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
         {items.map((item) => {
           return (
-            <SortableItem key={item.id} id={item.id}>
-              {renderItem(item)}
-            </SortableItem>
+            <SortableItem key={item.id} item={item} renderItem={renderItem} />
           );
         })}
       </SortableContext>
