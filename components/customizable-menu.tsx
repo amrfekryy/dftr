@@ -22,6 +22,12 @@ import React from "react";
 import { ArrowDownIcon } from "./icons/arrow-down";
 import { ArrowUpIcon } from "./icons/arrow-up";
 import { CogIcon } from "./icons/cog";
+import { EditIcon } from "./icons/edit";
+import { ViewIcon } from "./icons/view";
+import { HideIcon } from "./icons/hide";
+import { DragIcon } from "./icons/drag";
+import { DoneIcon } from "./icons/done";
+import { CancelIcon } from "./icons/cancel";
 
 // Menu items.
 const items = [
@@ -68,6 +74,7 @@ export function CustomizableMenu() {
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const [expandedId, setExpandedId] = React.useState<number | null>(null);
+  const [isEditMode, setIsEditMode] = React.useState(false);
 
   return (
     <Sidebar
@@ -76,7 +83,20 @@ export function CustomizableMenu() {
     >
       <SidebarHeader className="h-[98px] px-10">
         <div>Menu</div>
-        <CogIcon />
+        {isEditMode ? (
+          <div className="flex gap-3 items-center">
+            <IconButton
+              icon={<CancelIcon />}
+              onClick={() => setIsEditMode(false)}
+            />
+            <IconButton
+              icon={<DoneIcon />}
+              onClick={() => setIsEditMode(false)}
+            />
+          </div>
+        ) : (
+          <IconButton icon={<CogIcon />} onClick={() => setIsEditMode(true)} />
+        )}
       </SidebarHeader>
       <Separator />
       <SidebarContent>
@@ -94,30 +114,72 @@ export function CustomizableMenu() {
               >
                 <SidebarMenuItem key={item.title}>
                   <div className="w-[412px] h-[65px] bg-[#F7F7F7] px-6 rounded-sm flex justify-between items-center">
-                    <Link href={item.target || "#"}>
-                      <span>{item.title}</span>
-                    </Link>
-                    {item.children && (
-                      <CollapsibleTrigger
-                        onClick={() => setExpandedId(item.id)}
-                      >
-                        {expandedId === item.id ? (
-                          <ArrowUpIcon />
-                        ) : (
-                          <ArrowDownIcon />
+                    {isEditMode ? (
+                      <>
+                        <div className="flex gap-3 items-center">
+                          <IconButton icon={<DragIcon />} onClick={() => {}} />
+                          <span>{item.title}</span>
+                        </div>
+                        <div className="flex gap-3 items-center">
+                          <IconButton icon={<EditIcon />} onClick={() => {}} />
+                          <IconButton icon={<ViewIcon />} onClick={() => {}} />
+                          <IconButton icon={<HideIcon />} onClick={() => {}} />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Link href={item.target || "#"}>{item.title}</Link>
+                        {item.children && (
+                          <CollapsibleTrigger>
+                            <IconButton
+                              icon={
+                                expandedId === item.id ? (
+                                  <ArrowUpIcon />
+                                ) : (
+                                  <ArrowDownIcon />
+                                )
+                              }
+                            />
+                          </CollapsibleTrigger>
                         )}
-                      </CollapsibleTrigger>
+                      </>
                     )}
                   </div>
                   <CollapsibleContent>
                     {item.children && (
                       <SidebarMenuSub>
-                        {item.children.map((child) => (
-                          <SidebarMenuSubItem key={child.id}>
-                            <div className="h-[52px] flex justify-between items-center">
-                              <Link href={child.target || "#"}>
-                                <span>{child.title}</span>
-                              </Link>
+                        {item.children.map((item) => (
+                          <SidebarMenuSubItem key={item.id}>
+                            <div className="h-[52px] flex justify-between items-center pr-6">
+                              {isEditMode ? (
+                                <>
+                                  <div className="flex gap-3 items-center">
+                                    <IconButton
+                                      icon={<DragIcon />}
+                                      onClick={() => {}}
+                                    />
+                                    <span>{item.title}</span>
+                                  </div>
+                                  <div className="flex gap-3 items-center">
+                                    <IconButton
+                                      icon={<EditIcon />}
+                                      onClick={() => {}}
+                                    />
+                                    <IconButton
+                                      icon={<ViewIcon />}
+                                      onClick={() => {}}
+                                    />
+                                    <IconButton
+                                      icon={<HideIcon />}
+                                      onClick={() => {}}
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <Link href={item.target || "#"}>
+                                  {item.title}
+                                </Link>
+                              )}
                             </div>
                           </SidebarMenuSubItem>
                         ))}
@@ -131,5 +193,19 @@ export function CustomizableMenu() {
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+function IconButton({
+  icon,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  onClick?: () => void;
+}) {
+  return (
+    <div className="hover:cursor-pointer" onClick={onClick}>
+      {icon}
+    </div>
   );
 }
