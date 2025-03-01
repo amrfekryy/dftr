@@ -19,15 +19,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import React from "react";
 import { ItemsDnd } from "./dnd";
-import { ArrowDownIcon } from "./icons/arrow-down";
-import { ArrowUpIcon } from "./icons/arrow-up";
-import { CancelIcon } from "./icons/cancel";
-import { CogIcon } from "./icons/cog";
-import { DoneIcon } from "./icons/done";
-import { DragIcon } from "./icons/drag";
-import { EditIcon } from "./icons/edit";
-import { HideIcon } from "./icons/hide";
-import { ViewIcon } from "./icons/view";
+import { ArrowDownIcon } from "../icons/arrow-down";
+import { ArrowUpIcon } from "../icons/arrow-up";
+import { CancelIcon } from "../icons/cancel";
+import { CogIcon } from "../icons/cog";
+import { DoneIcon } from "../icons/done";
+import { DragIcon } from "../icons/drag";
+import { EditIcon } from "../icons/edit";
+import { HideIcon } from "../icons/hide";
+import { ViewIcon } from "../icons/view";
 
 export interface Item {
   id: number;

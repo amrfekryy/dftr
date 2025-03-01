@@ -1,5 +1,5 @@
 import AppNavbar from "@/components/app-navbar";
-import { CustomizableMenu } from "@/components/customizable-menu";
+import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
@@ -29,7 +29,7 @@ export default function RootLayout({
           <div className="flex flex-col h-full w-full">
             <AppNavbar />
             <div className="flex h-full w-full">
-              <CustomizableMenu />
+              <AppSidebar />
               <main className="h-full flex-1">{children}</main>
             </div>
           </div>
