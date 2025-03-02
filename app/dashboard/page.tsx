@@ -70,6 +70,7 @@ export default function Page() {
       <div className="flex flex-col gap-3">
         {[...data, ...data].map((item) => (
           <Card
+            key={item.company}
             title={item.title}
             company={item.company}
             location={item.location}
@@ -137,7 +138,10 @@ function Card(props: CardProps) {
         </div>
         <div className="flex gap-2">
           {props.tags.map((tag) => (
-            <div className="font-medium text-[9px] md:text-[16px] text-[#707070] bg-[#F7F7F7] group-hover:bg-white px-2 py-1 rounded-sm">
+            <div
+              key={tag}
+              className="font-medium text-[9px] md:text-[16px] text-[#707070] bg-[#F7F7F7] group-hover:bg-white px-2 py-1 rounded-sm"
+            >
               {tag}
             </div>
           ))}

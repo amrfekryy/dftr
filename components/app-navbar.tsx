@@ -90,7 +90,7 @@ function MobileNavbar() {
             <Separator />
             <div className="px-10 flex flex-col gap-5">
               {["Setting and privacy", "Language", "Help"].map((i) => (
-                <div className="text-[#707070] font-medium text-[16px]">
+                <div key={i} className="text-[#707070] font-medium text-[16px]">
                   {i}
                 </div>
               ))}
