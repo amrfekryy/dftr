@@ -20,6 +20,7 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Item } from "./customizable-menu";
+import { toast } from "sonner";
 
 type RenderItem = ({
   item,
@@ -69,6 +70,33 @@ export function ItemsDnd({
     })
   );
 
+  const postTrackData = async ({
+    id,
+    from,
+    to,
+  }: {
+    id: number;
+    from: number;
+    to: number;
+  }) => {
+    try {
+      const response = await fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, from, to }),
+      });
+
+      if (response.status === 204) {
+        console.log(`Item ${id} moved from ${from} to ${to} `);
+      } else {
+        const errorData = await response.json();
+        toast.error(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      toast.error("Failed to send data.");
+    }
+  };
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
@@ -76,7 +104,11 @@ export function ItemsDnd({
       setItems((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
-
+        postTrackData({
+          id: Number(active.id),
+          from: oldIndex,
+          to: newIndex,
+        });
         return arrayMove(items, oldIndex, newIndex);
       });
     }
