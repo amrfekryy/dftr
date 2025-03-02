@@ -32,6 +32,7 @@ import { HideIcon } from "../icons/hide";
 import { ViewIcon } from "../icons/view";
 import { Separator } from "../ui/separator";
 import { ItemsDnd } from "./dnd";
+import { toast } from "sonner";
 
 export interface Item {
   id: number;
@@ -102,8 +103,24 @@ export function CustomizableMenu() {
     setIsEditMode(true);
   };
 
-  const onUpdateSave = () => {
-    setIsEditMode(false);
+  const onUpdateSave = async () => {
+    try {
+      const response = await fetch("/api/nav", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(items),
+      });
+
+      if (response.ok) {
+        toast.success("Navigation data saved successfully!");
+        setIsEditMode(false);
+      } else {
+        const errorData = await response.json();
+        toast.error(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      toast.error("Failed to send data.");
+    }
   };
 
   const onUpdateCancel = () => {
