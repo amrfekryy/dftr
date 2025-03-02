@@ -134,11 +134,11 @@ function MenuItem({
   //   pathname === item.target ||
   //   item.children?.some((child) => child.target === pathname);
 
-  function setSubItems(subItems: Item[]) {
+  function setSubItems(setter: (items: Item[]) => Item[]) {
     setItems((items) => {
       return items.map((i) => {
         if (i.id === item.id) {
-          return { ...i, children: subItems };
+          return { ...i, children: setter(i.children || []) };
         }
         return i;
       });
