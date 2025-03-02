@@ -68,9 +68,9 @@ export default function Page() {
         </div>
       </div>
       <div className="flex flex-col gap-3">
-        {[...data, ...data].map((item) => (
+        {[...data, ...data].map((item, i) => (
           <Card
-            key={item.company}
+            key={i}
             title={item.title}
             company={item.company}
             location={item.location}
