@@ -106,9 +106,10 @@ export function CustomizableMenu() {
 
   const onUpdateSave = async () => {
     if (isDeployed) {
-      // simulate file creation on production
+      // simulate nav.json file creation on vercel as it doesn't allow it.
       toast.success("Navigation data saved successfully!");
       setIsEditMode(false);
+      return
     }
 
     try {
