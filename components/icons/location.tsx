@@ -25,3 +25,29 @@ export const LocationIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
     </svg>
   );
 };
+
+export const LocationMobileIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
+  width = 5,
+  height = 8,
+  fill = "currentColor",
+  className = "",
+  ...props
+}) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 5 8"
+      fill={fill}
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <path
+        d="M2.77261 4.01616C3.12463 4.01616 3.46223 3.87632 3.71114 3.6274C3.96006 3.37849 4.0999 3.04089 4.0999 2.68887C4.0999 2.33685 3.96006 1.99924 3.71114 1.75033C3.46223 1.50141 3.12463 1.36157 2.77261 1.36157C2.42059 1.36157 2.08298 1.50141 1.83407 1.75033C1.58515 1.99924 1.44531 2.33685 1.44531 2.68887C1.44531 3.04089 1.58515 3.37849 1.83407 3.6274C2.08298 3.87632 2.42059 4.01616 2.77261 4.01616ZM2.77261 4.01616V7.99804"
+        stroke="#707070"
+        stroke-width="0.936913"
+      />
+    </svg>
+  );
+};
