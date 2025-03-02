@@ -4,7 +4,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -26,7 +25,6 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} antialiased min-h-screen w-screen bg-[#FAFFFF] md:bg-[#F5F5F5]`}
       >
-        <Analytics />
         <SidebarProvider>
           <div className="flex flex-col h-full w-full">
             <AppNavbar />
