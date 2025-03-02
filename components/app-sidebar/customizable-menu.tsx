@@ -88,6 +88,7 @@ export function CustomizableMenu() {
   const [itemsBackup, setItemsBackup] = React.useState<Item[]>([]);
   const [expandedId, setExpandedId] = React.useState<number | null>(null);
   const [isEditMode, setIsEditMode] = React.useState(false);
+  const isDeployed = !!process.env.NEXT_PUBLIC_VERCEL_URL;
 
   useEffect(() => {
     fetch("/api/nav")
@@ -104,6 +105,12 @@ export function CustomizableMenu() {
   };
 
   const onUpdateSave = async () => {
+    if (isDeployed) {
+      // simulate file creation on production
+      toast.success("Navigation data saved successfully!");
+      setIsEditMode(false);
+    }
+
     try {
       const response = await fetch("/api/nav", {
         method: "POST",
