@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
-  useSidebar
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -113,6 +113,9 @@ export function CustomizableMenu() {
             )}
           />
         </SidebarMenu>
+        {isMobile && isEditMode && (
+          <CancelButton onClick={() => setIsEditMode(false)} />
+        )}
       </SidebarContent>
     </Sidebar>
   );
@@ -230,20 +233,24 @@ function Header({
   isEditMode: boolean;
   setIsEditMode: (value: boolean) => void;
 }) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   return (
     <SidebarHeader className="h-[98px] px-10">
       <div className="flex gap-3 items-center">
-        <IconButton icon={<ArrowLeftIcon />} onClick={toggleSidebar} />
+        {isMobile && (
+          <IconButton icon={<ArrowLeftIcon />} onClick={toggleSidebar} />
+        )}
         <div>Menu</div>
       </div>
       {isEditMode ? (
         <div className="flex gap-3 items-center">
-          <IconButton
-            icon={<CancelIcon />}
-            onClick={() => setIsEditMode(false)}
-          />
+          {!isMobile && (
+            <IconButton
+              icon={<CancelIcon />}
+              onClick={() => setIsEditMode(false)}
+            />
+          )}
           <IconButton
             icon={<DoneIcon />}
             onClick={() => setIsEditMode(false)}
@@ -302,7 +309,9 @@ function EditableItem({
           "opacity-50": item.visible === false,
         })}
       >
-        <IconButton icon={<DragIcon {...dndProps} className="hover:cursor-grab"/>} />
+        <IconButton
+          icon={<DragIcon {...dndProps} className="hover:cursor-grab" />}
+        />
         {isEditing ? (
           <Input
             autoFocus
@@ -350,6 +359,17 @@ function IconButton({
   return (
     <div className="hover:cursor-pointer" onClick={onClick}>
       {icon}
+    </div>
+  );
+}
+
+function CancelButton({ onClick }: { onClick?: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      className="font-medium text-lg text-[#ED1F03] flex justify-center items-center mt-5 hover:cursor-pointer"
+    >
+      Cancel
     </div>
   );
 }
