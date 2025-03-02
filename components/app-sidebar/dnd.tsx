@@ -83,7 +83,9 @@ export function ItemsDnd({
   }
 
   return disableDnd ? (
-    items.map((item) => renderItem({ item }))
+    items
+      .filter((item) => item.visible !== false)
+      .map((item) => renderItem({ item }))
   ) : (
     <DndContext
       sensors={sensors}

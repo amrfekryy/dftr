@@ -28,6 +28,8 @@ import { DragIcon } from "../icons/drag";
 import { EditIcon } from "../icons/edit";
 import { HideIcon } from "../icons/hide";
 import { ViewIcon } from "../icons/view";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export interface Item {
   id: number;
@@ -155,7 +157,7 @@ function MenuItem({
       >
         <div className="w-[412px] h-[65px] bg-[#F7F7F7] px-6 rounded-sm flex justify-between items-center">
           {isEditMode ? (
-            <EditableItem item={item} dndProps={dndProps} />
+            <EditableItem item={item} dndProps={dndProps} setItems={setItems} />
           ) : (
             <>
               <Link href={item.target || "#"}>{item.title}</Link>
@@ -183,6 +185,7 @@ function MenuItem({
                     item={item}
                     isEditMode={isEditMode}
                     dndProps={dndProps}
+                    setItems={setItems}
                   />
                 )}
               />
@@ -198,16 +201,18 @@ function MenuSubItem({
   item,
   isEditMode,
   dndProps,
+  setItems,
 }: {
   item: Item;
   isEditMode: boolean;
   dndProps: any;
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 }) {
   return (
     <SidebarMenuSubItem key={item.id}>
       <div className="h-[52px] flex justify-between items-center pr-6">
         {isEditMode ? (
-          <EditableItem item={item} dndProps={dndProps} />
+          <EditableItem item={item} dndProps={dndProps} setItems={setItems} />
         ) : (
           <Link href={item.target || "#"}>{item.title}</Link>
         )}
@@ -244,17 +249,83 @@ function Header({
   );
 }
 
-function EditableItem({ item, dndProps }: { item: Item; dndProps: any }) {
+function EditableItem({
+  item,
+  setItems,
+  dndProps,
+}: {
+  item: Item;
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  dndProps: any;
+}) {
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  function updateItem(update: Partial<Item>) {
+    setItems((items) => {
+      return items.map((i) => {
+        if (i.id === item.id) {
+          return {
+            ...i,
+            ...update,
+          };
+        }
+        if (i.children) {
+          return {
+            ...i,
+            children: i.children.map((c) => {
+              if (c.id === item.id) {
+                return {
+                  ...c,
+                  ...update,
+                };
+              }
+              return c;
+            }),
+          };
+        }
+        return i;
+      });
+    });
+  }
+
   return (
     <>
-      <div className="flex gap-3 items-center">
-        <IconButton icon={<DragIcon {...dndProps} />} onClick={() => {}} />
-        <span>{item.title}</span>
+      <div className={cn("flex gap-3 items-center", {
+        "opacity-50": item.visible === false,
+      })}>
+        <IconButton icon={<DragIcon {...dndProps} />} />
+        {isEditing ? (
+          <Input
+            autoFocus
+            type="text"
+            value={item.title}
+            onBlur={() => setIsEditing(false)}
+            onChange={(e) => updateItem({ title: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setIsEditing(false);
+              }
+            }}
+          />
+        ) : (
+          <span>{item.title}</span>
+        )}
       </div>
       <div className="flex gap-3 items-center">
-        <IconButton icon={<EditIcon />} onClick={() => {}} />
-        <IconButton icon={<ViewIcon />} onClick={() => {}} />
-        <IconButton icon={<HideIcon />} onClick={() => {}} />
+        {!isEditing && (
+          <IconButton icon={<EditIcon />} onClick={() => setIsEditing(true)} />
+        )}
+        {item.visible === false ? (
+          <IconButton
+            icon={<HideIcon />}
+            onClick={() => updateItem({ visible: true })}
+          />
+        ) : (
+          <IconButton
+            icon={<ViewIcon />}
+            onClick={() => updateItem({ visible: false })}
+          />
+        )}
       </div>
     </>
   );
