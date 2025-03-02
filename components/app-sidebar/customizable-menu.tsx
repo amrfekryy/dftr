@@ -84,15 +84,43 @@ export const initialItems: Item[] = [
 export function CustomizableMenu() {
   const isMobile = useIsMobile();
   const [items, setItems] = React.useState(initialItems);
+  const [itemsPreUpdates, setItemsPreUpdates] = React.useState(initialItems);
   const [expandedId, setExpandedId] = React.useState<number | null>(null);
   const [isEditMode, setIsEditMode] = React.useState(false);
+
+  const createBackup = () => {
+    setItemsPreUpdates(items);
+  };
+
+  const cancelUpdates = () => {
+    setItems(itemsPreUpdates);
+  };
+
+  const onUpdateStart = () => {
+    createBackup();
+    setIsEditMode(true);
+  };
+
+  const onUpdateSave = () => {
+    setIsEditMode(false);
+  };
+
+  const onUpdateCancel = () => {
+    cancelUpdates();
+    setIsEditMode(false);
+  };
 
   return (
     <Sidebar
       collapsible={isMobile ? "offcanvas" : "none"}
       side={isMobile ? "right" : "left"}
     >
-      <Header isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
+      <Header
+        isEditMode={isEditMode}
+        onUpdateStart={onUpdateStart}
+        onUpdateCancel={onUpdateCancel}
+        onUpdateSave={onUpdateSave}
+      />
       <Separator />
       <SidebarContent>
         <SidebarMenu>
@@ -113,9 +141,7 @@ export function CustomizableMenu() {
             )}
           />
         </SidebarMenu>
-        {isMobile && isEditMode && (
-          <CancelButton onClick={() => setIsEditMode(false)} />
-        )}
+        {isMobile && isEditMode && <CancelButton onClick={onUpdateCancel} />}
       </SidebarContent>
     </Sidebar>
   );
@@ -228,10 +254,14 @@ function MenuSubItem({
 
 function Header({
   isEditMode,
-  setIsEditMode,
+  onUpdateStart,
+  onUpdateCancel,
+  onUpdateSave,
 }: {
   isEditMode: boolean;
-  setIsEditMode: (value: boolean) => void;
+  onUpdateStart: () => void;
+  onUpdateCancel: () => void;
+  onUpdateSave: () => void;
 }) {
   const { toggleSidebar, isMobile } = useSidebar();
 
@@ -246,18 +276,12 @@ function Header({
       {isEditMode ? (
         <div className="flex gap-3 items-center">
           {!isMobile && (
-            <IconButton
-              icon={<CancelIcon />}
-              onClick={() => setIsEditMode(false)}
-            />
+            <IconButton icon={<CancelIcon />} onClick={onUpdateCancel} />
           )}
-          <IconButton
-            icon={<DoneIcon />}
-            onClick={() => setIsEditMode(false)}
-          />
+          <IconButton icon={<DoneIcon />} onClick={onUpdateSave} />
         </div>
       ) : (
-        <IconButton icon={<CogIcon />} onClick={() => setIsEditMode(true)} />
+        <IconButton icon={<CogIcon />} onClick={onUpdateStart} />
       )}
     </SidebarHeader>
   );
