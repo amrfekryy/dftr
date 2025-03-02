@@ -5,6 +5,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 import {
   Sidebar,
   SidebarContent,
@@ -13,14 +14,14 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
-  SidebarSeparator,
-  useSidebar,
+  useSidebar
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
-import { ItemsDnd } from "./dnd";
 import { ArrowDownIcon } from "../icons/arrow-down";
+import { ArrowLeftIcon } from "../icons/arrow-left";
 import { ArrowUpIcon } from "../icons/arrow-up";
 import { CancelIcon } from "../icons/cancel";
 import { CogIcon } from "../icons/cog";
@@ -29,9 +30,8 @@ import { DragIcon } from "../icons/drag";
 import { EditIcon } from "../icons/edit";
 import { HideIcon } from "../icons/hide";
 import { ViewIcon } from "../icons/view";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { ArrowLeftIcon } from "../icons/arrow-left";
+import { Separator } from "../ui/separator";
+import { ItemsDnd } from "./dnd";
 
 export interface Item {
   id: number;
@@ -93,7 +93,7 @@ export function CustomizableMenu() {
       side={isMobile ? "right" : "left"}
     >
       <Header isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
-      <SidebarSeparator />
+      <Separator />
       <SidebarContent>
         <SidebarMenu>
           <ItemsDnd
@@ -302,7 +302,7 @@ function EditableItem({
           "opacity-50": item.visible === false,
         })}
       >
-        <IconButton icon={<DragIcon {...dndProps} />} />
+        <IconButton icon={<DragIcon {...dndProps} className="hover:cursor-grab"/>} />
         {isEditing ? (
           <Input
             autoFocus
