@@ -19,7 +19,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowDownIcon } from "../icons/arrow-down";
 import { ArrowLeftIcon } from "../icons/arrow-left";
 import { ArrowUpIcon } from "../icons/arrow-up";
@@ -83,21 +83,22 @@ export const initialItems: Item[] = [
 
 export function CustomizableMenu() {
   const isMobile = useIsMobile();
-  const [items, setItems] = React.useState(initialItems);
-  const [itemsPreUpdates, setItemsPreUpdates] = React.useState(initialItems);
+  const [items, setItems] = React.useState<Item[]>([]);
+  const [itemsBackup, setItemsBackup] = React.useState<Item[]>([]);
   const [expandedId, setExpandedId] = React.useState<number | null>(null);
   const [isEditMode, setIsEditMode] = React.useState(false);
 
-  const createBackup = () => {
-    setItemsPreUpdates(items);
-  };
-
-  const cancelUpdates = () => {
-    setItems(itemsPreUpdates);
-  };
+  useEffect(() => {
+    fetch("/api/nav")
+      .then((res) => res.json())
+      .then((data) => {
+        setItems(data);
+        setItemsBackup(data);
+      });
+  }, []);
 
   const onUpdateStart = () => {
-    createBackup();
+    setItemsBackup(items);
     setIsEditMode(true);
   };
 
@@ -106,7 +107,7 @@ export function CustomizableMenu() {
   };
 
   const onUpdateCancel = () => {
-    cancelUpdates();
+    setItems(itemsBackup);
     setIsEditMode(false);
   };
 
