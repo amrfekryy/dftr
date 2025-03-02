@@ -1,6 +1,7 @@
 import AppNavbar from "@/components/app-navbar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Analytics } from "@vercel/analytics/react"
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -26,7 +27,6 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} antialiased min-h-screen w-screen bg-[#FAFFFF] md:bg-[#F5F5F5]`}
       >
-        <Toaster richColors />
         <SidebarProvider>
           <div className="flex flex-col h-full w-full">
             <AppNavbar />
@@ -36,6 +36,8 @@ export default function RootLayout({
             </div>
           </div>
         </SidebarProvider>
+        <Analytics/>
+        <Toaster richColors />
       </body>
     </html>
   );
