@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} antialiased min-h-screen w-screen bg-[#F5F5F5]`}
+        className={`${dmSans.variable} antialiased min-h-screen w-screen bg-[#FAFFFF] md:bg-[#F5F5F5]`}
       >
         <SidebarProvider>
           <div className="flex flex-col h-full w-full">

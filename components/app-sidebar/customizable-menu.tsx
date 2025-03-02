@@ -14,6 +14,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
@@ -30,6 +31,7 @@ import { HideIcon } from "../icons/hide";
 import { ViewIcon } from "../icons/view";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { ArrowLeftIcon } from "../icons/arrow-left";
 
 export interface Item {
   id: number;
@@ -228,9 +230,14 @@ function Header({
   isEditMode: boolean;
   setIsEditMode: (value: boolean) => void;
 }) {
+  const { toggleSidebar } = useSidebar();
+
   return (
     <SidebarHeader className="h-[98px] px-10">
-      <div>Menu</div>
+      <div className="flex gap-3 items-center">
+        <IconButton icon={<ArrowLeftIcon />} onClick={toggleSidebar} />
+        <div>Menu</div>
+      </div>
       {isEditMode ? (
         <div className="flex gap-3 items-center">
           <IconButton
@@ -290,9 +297,11 @@ function EditableItem({
 
   return (
     <>
-      <div className={cn("flex gap-3 items-center", {
-        "opacity-50": item.visible === false,
-      })}>
+      <div
+        className={cn("flex gap-3 items-center", {
+          "opacity-50": item.visible === false,
+        })}
+      >
         <IconButton icon={<DragIcon {...dndProps} />} />
         {isEditing ? (
           <Input
