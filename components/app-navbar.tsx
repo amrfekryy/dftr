@@ -1,9 +1,5 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import Link from "next/link";
-import { useState } from "react";
-import { SidebarTrigger } from "./ui/sidebar";
 import {
   Sheet,
   SheetContent,
@@ -12,20 +8,39 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
+import Link from "next/link";
+import { useState } from "react";
+import { EmployersIcon, EmployersMobileIcon } from "./icons/employers";
+import { HomeIcon, HomeMobileIcon } from "./icons/home";
+import { JobsIcon, JobsMobileIcon } from "./icons/jobs";
+import { MessagingIcon, MessagingMobileIcon } from "./icons/messaging";
+import {
+  NotificationsIcon,
+  NotificationsMobileIcon,
+} from "./icons/notifications";
 import { IzamLogo } from "./izam-logo";
 import { UserAvatar } from "./user-avatar";
-import { HomeIcon } from "./icons/home";
-import { JobsIcon } from "./icons/jobs";
-import { NotificationsIcon } from "./icons/notifications";
-import { EmployersIcon } from "./icons/employers";
-import { MessagingIcon } from "./icons/messaging";
+import { Separator } from "./ui/separator";
 
 const items = [
-  { name: "Home", icon: <HomeIcon /> },
-  { name: "Jobs", icon: <JobsIcon /> },
-  { name: "Employers", icon: <EmployersIcon /> },
-  { name: "Notifications", icon: <NotificationsIcon /> },
-  { name: "Messaging", icon: <MessagingIcon /> },
+  { name: "Home", icon: <HomeIcon />, iconMobile: <HomeMobileIcon /> },
+  { name: "Jobs", icon: <JobsIcon />, iconMobile: <JobsMobileIcon /> },
+  {
+    name: "Employers",
+    icon: <EmployersIcon />,
+    iconMobile: <EmployersMobileIcon />,
+  },
+  {
+    name: "Notifications",
+    icon: <NotificationsIcon />,
+    iconMobile: <NotificationsMobileIcon />,
+  },
+  {
+    name: "Messaging",
+    icon: <MessagingIcon />,
+    iconMobile: <MessagingMobileIcon />,
+  },
   { name: "Profile", icon: <UserAvatar size={30} /> },
 ];
 
@@ -42,13 +57,49 @@ function MobileNavbar() {
           <UserAvatar size={42} />
         </SheetTrigger>
         <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Are you absolutely sure?</SheetTitle>
-            <SheetDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </SheetDescription>
-          </SheetHeader>
+          <div className="py-10 flex flex-col gap-6">
+            <div className="px-10 flex justify-between">
+              <div className="flex items-center gap-6">
+                <UserAvatar size={57} />
+                <div className="flex flex-col">
+                  <div className="font-medium text-lg text-[#161616]">
+                    Ahmed Amaar
+                  </div>
+                  <div className="font-normal text-[#707070]">
+                    UX UI designer
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Separator />
+            <ul className="px-10 flex flex-col items-start gap-6">
+              {items.slice(0, 5).map((item) => {
+                return (
+                  <li
+                    key={item.name}
+                    className="flex items-center justify-center gap-3 hover:cursor-pointer"
+                  >
+                    {item.iconMobile}
+                    <div className="text-[#5B5B5B] font-medium text-[14px]">
+                      {item.name}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <Separator />
+            <div className="px-10 flex flex-col gap-5">
+              {["Setting and privacy", "Language", "Help"].map((i) => (
+                <div className="text-[#707070] font-medium text-[16px]">
+                  {i}
+                </div>
+              ))}
+            </div>
+            <Separator />
+            <div className="px-10 text-[#ED1F03] font-medium text-lg hover:cursor-pointer">
+              Logout
+            </div>
+          </div>
         </SheetContent>
       </Sheet>
       <IzamLogo width={59} height={18} />
